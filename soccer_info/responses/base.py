@@ -65,6 +65,5 @@ class ForgivingResponse(ResponseComponent):
     """
     model_config = ConfigDict(
         extra='allow',
-        validate_assignment=False,
         arbitrary_types_allowed=True
     )

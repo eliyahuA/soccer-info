@@ -1,10 +1,9 @@
 import httpx
 from typing import Optional, Type, TypeVar
 
-from soccer_info.requests_ import enums
 from soccer_info.requests_.headers import Header
 from soccer_info.requests_.parameters import BaseParameters
-from soccer_info.responses.base import ResponseComponent
+from soccer_info.responses.base import ResponseComponent, ResponseHeaders
 from soccer_info.settings import Settings
 from .base_client import BaseClient
 from .championships import Championships
@@ -30,7 +29,7 @@ class Client(BaseClient):
     def __init__(
             self,
             settings: Settings,
-            default_language: Optional[enums.Language] = None,
+            default_language: Optional[str] = None,
             timeout: float = 30.0,
     ):
         """Initialize the main Soccer API client.
@@ -87,7 +86,13 @@ class Client(BaseClient):
         
         response.raise_for_status()
         
-        return response_model.model_validate_json(response.text)
+        # Parse JSON response
+        parsed = response_model.model_validate_json(response.text)
+        
+        # Parse and attach response headers (Pydantic handles normalization and type conversion)
+        parsed.response_headers = ResponseHeaders.model_validate(dict(response.headers))
+        
+        return parsed
 
     def close(self) -> None:
         """Close the HTTP client and release resources."""

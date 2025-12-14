@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typing import Optional
 
-from .enums import Language, ResponseFormat
+from .enums import ResponseFormat
 
 
 class BaseParameters(BaseModel):
@@ -43,7 +43,7 @@ class ChampionshipListParameters(BaseParameters):
     """
     page: Optional[int] = Field(default=None, alias="p")
     country: Optional[str] = Field(default=None, alias="c")
-    language: Optional[Language] = Field(default=None, alias="l")
+    language: Optional[str] = Field(default=None, alias="l")
     format: Optional[ResponseFormat] = Field(default=None, alias="f")
 
 
@@ -55,4 +55,4 @@ class ChampionshipViewParameters(BaseParameters):
         language: Language code for response (default: en_US)
     """
     id: int = Field(alias="i")
-    language: Optional[Language] = Field(default=None, alias="l")
+    language: Optional[str] = Field(default=None, alias="l")

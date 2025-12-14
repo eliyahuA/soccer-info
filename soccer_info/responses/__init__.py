@@ -1,5 +1,5 @@
 """Response models for Soccer Football Info API."""
-from .base import ResponseComponent, APIResponse, Pagination
+from .base import ResponseComponent, APIResponse, Pagination, ResponseHeaders
 from .championships import (
     ChampionshipListItem,
     ChampionshipListResponse,
@@ -15,6 +15,7 @@ __all__ = [
     'ResponseComponent',
     'APIResponse',
     'Pagination',
+    'ResponseHeaders',
     'ChampionshipListItem',
     'ChampionshipListResponse',
     'ChampionshipDetail',

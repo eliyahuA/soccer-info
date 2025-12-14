@@ -1,6 +1,69 @@
 from pathlib import Path
-from pydantic import BaseModel, ConfigDict
-from typing import TypeVar, List, Generic, Any, Optional
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+from typing import TypeVar, List, Generic, Any, Optional, Dict
+
+
+class ResponseHeaders(BaseModel):
+    """HTTP response headers from API responses.
+    
+    Contains typed fields for known headers, particularly rate limiting
+    information. Unknown headers are ignored.
+    """
+    model_config = ConfigDict(
+        populate_by_name=True,
+        extra='ignore'  # Ignore unknown headers
+    )
+    
+    @model_validator(mode='before')
+    @classmethod
+    def normalize_header_keys(cls, data):
+        """Normalize header keys to lowercase for case-insensitive matching."""
+        if isinstance(data, dict):
+            return {k.lower(): v for k, v in data.items()}
+        return data
+    
+    # Rate limit headers (try both naming conventions)
+    x_ratelimit_request_limit: Optional[int] = Field(
+        default=None,
+        alias="x-ratelimit-request-limit"
+    )
+    x_rate_limit_limit: Optional[int] = Field(
+        default=None,
+        alias="x-rate-limit-limit"
+    )
+    
+    x_ratelimit_request_remaining: Optional[int] = Field(
+        default=None,
+        alias="x-ratelimit-request-remaining"
+    )
+    x_rate_limit_remaining: Optional[int] = Field(
+        default=None,
+        alias="x-rate-limit-remaining"
+    )
+    
+    x_ratelimit_request_reset: Optional[int] = Field(
+        default=None,
+        alias="x-ratelimit-request-reset"
+    )
+    x_rate_limit_reset: Optional[int] = Field(
+        default=None,
+        alias="x-rate-limit-reset"
+    )
+
+    @property
+    def hours_to_reset(self) -> Optional[float]:
+        """Calculate hours until rate limit reset.
+        
+        Returns the number of hours (with 2 decimal places) until the rate limit resets,
+        based on whichever reset value is available (x_ratelimit_request_reset takes precedence).
+        
+        Returns:
+            Hours until reset as a float, or None if no reset value is available.
+        """
+        reset_seconds = self.x_ratelimit_request_reset or self.x_rate_limit_reset
+        if reset_seconds is not None:
+            return round(reset_seconds / 3600, 2)
+        return None
 
 
 class ResponseComponent(BaseModel):
@@ -40,6 +103,12 @@ class APIResponse(ResponseComponent, Generic[T]):
     errors: List[str]
     pagination: List[Pagination]
     result: List[T]
+    
+    response_headers: ResponseHeaders = Field(
+        default_factory=ResponseHeaders,
+        exclude=True,  # Don't include in JSON serialization
+        description="HTTP response headers from the API"
+    )
 
     @property
     def is_success(self) -> bool:

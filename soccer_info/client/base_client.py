@@ -1,6 +1,5 @@
 from typing import Optional
 
-from soccer_info.requests_ import enums
 from soccer_info.settings import Settings
 
 
@@ -14,7 +13,7 @@ class BaseClient:
     def __init__(
             self,
             settings: Settings,
-            default_language: Optional[enums.Language] = None,
+            default_language: Optional[str] = None,
     ):
         """Initialize the base client.
         

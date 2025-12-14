@@ -46,7 +46,7 @@ class Championships:
             self,
             page: Optional[int] = None,
             country: Optional[str] = None,
-            language: Optional[enums.Language] = None,
+            language: Optional[str] = None,
             format_: Optional[enums.ResponseFormat] = None,
     ) -> ChampionshipListResponse:
         """Retrieve list of all championships.
@@ -78,7 +78,7 @@ class Championships:
     def get_by_id(
             self,
             championship_id: int,
-            language: Optional[enums.Language] = None,
+            language: Optional[str] = None,
     ) -> ChampionshipViewResponse:
         """Retrieve detailed championship data including seasons and standings.
         

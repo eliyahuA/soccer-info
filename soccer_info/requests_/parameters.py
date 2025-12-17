@@ -1,8 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typing import Optional
 
-from .enums import ResponseFormat
-
 
 class BaseParameters(BaseModel):
     """Base model for Soccer Football Info API request parameters.
@@ -39,12 +37,10 @@ class ChampionshipListParameters(BaseParameters):
         page: Page number for pagination (default: 1)
         country: Country code filter (default: "all")
         language: Language code for response (default: en_US)
-        format: Response format - json or csv
     """
     page: Optional[int] = Field(default=None, alias="p")
     country: Optional[str] = Field(default=None, alias="c")
     language: Optional[str] = Field(default=None, alias="l")
-    format: Optional[ResponseFormat] = Field(default=None, alias="f")
 
 
 class ChampionshipViewParameters(BaseParameters):

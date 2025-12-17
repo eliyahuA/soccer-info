@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from soccer_info.requests_ import enums
 from soccer_info.requests_.headers import Header
 from soccer_info.requests_.parameters import (
     ChampionshipListParameters,
@@ -38,7 +37,6 @@ class Championships:
             page: Optional[int] = None,
             country: Optional[str] = None,
             language: Optional[str] = None,
-            format_: Optional[enums.ResponseFormat] = None,
     ) -> ChampionshipListResponse:
         """Retrieve list of all championships.
         
@@ -49,7 +47,6 @@ class Championships:
             page: Page number for pagination (default: 1)
             country: Country code to filter championships (e.g., "IT", "ES")
             language: Language code for response (default: en_US)
-            format_: Response format - json or csv (default: json)
             
         Returns:
             ChampionshipListResponse containing list of championships with pagination
@@ -60,7 +57,6 @@ class Championships:
                 page=page,
                 country=country,
                 language=language or self.client.default_language,
-                format=format_,
             ),
             headers=self._header_provider(),
             response_model=ChampionshipListResponse,

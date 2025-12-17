@@ -1,14 +1,12 @@
 import httpx
-from typing import Optional, Type, TypeVar
+from typing import Optional, Type
 
 from soccer_info.requests_.headers import Header
 from soccer_info.requests_.parameters import BaseParameters
-from soccer_info.responses.base import ResponseComponent, ResponseHeaders
+from soccer_info.responses.base import ResponseHeaders
 from soccer_info.settings import Settings
-from .base_client import BaseClient
+from .base_client import BaseClient, T
 from .championships import Championships
-
-T = TypeVar('T', bound=ResponseComponent)
 
 
 class Client(BaseClient):
@@ -40,11 +38,11 @@ class Client(BaseClient):
             timeout: Request timeout in seconds (default: 30.0)
         """
         super().__init__(settings, default_language)
-        self._timeout = timeout
+        self.timeout = timeout
         self._http_client: Optional[httpx.Client] = None
         
         # Initialize domain clients
-        self.championships = Championships(self, self._do_request)
+        self.championships = Championships(self)
 
     @property
     def http_client(self) -> httpx.Client:
@@ -52,11 +50,11 @@ class Client(BaseClient):
         if self._http_client is None:
             self._http_client = httpx.Client(
                 base_url=self.settings.base_url,
-                timeout=self._timeout,
+                timeout=self.timeout,
             )
         return self._http_client
 
-    def _do_request(
+    def do_request(
             self,
             endpoint: str,
             params: BaseParameters,

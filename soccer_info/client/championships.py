@@ -1,45 +1,36 @@
-from typing import Optional, Callable, Type, TypeVar
+from dataclasses import dataclass
+from typing import Optional
 
 from soccer_info.requests_ import enums
 from soccer_info.requests_.headers import Header
 from soccer_info.requests_.parameters import (
-    BaseParameters,
     ChampionshipListParameters,
     ChampionshipViewParameters,
 )
-from soccer_info.responses.base import ResponseComponent
 from soccer_info.responses.championships import (
     ChampionshipListResponse,
     ChampionshipViewResponse,
 )
 from .base_client import BaseClient
 
-T = TypeVar('T', bound=ResponseComponent)
 
-
+@dataclass
 class Championships:
     """Domain client for championship-related API endpoints.
     
     Provides methods to retrieve championship information including
     lists, detailed views with seasons, groups, and standings.
+    
+    Attributes:
+        client: Base client containing settings and do_request implementation
     """
-
-    def __init__(
-            self,
-            client: BaseClient,
-            request_callable: Callable[..., T],
-    ):
-        """Initialize the Championships client.
-        
-        Args:
-            client: Base client containing settings and configuration
-            request_callable: Function to execute API requests
-        """
-        self._client = client
-        self._request_callable = request_callable
-        self._default_header_provider = lambda: Header(
-            x_rapidapi_key=self._client.settings.api_key,
-            x_rapidapi_host=self._client.settings.api_host,
+    client: BaseClient
+    
+    def __post_init__(self):
+        """Initialize the default header provider after dataclass initialization."""
+        self._header_provider = lambda: Header(
+            x_rapidapi_key=self.client.settings.api_key,
+            x_rapidapi_host=self.client.settings.api_host,
         )
 
     def get_list(
@@ -63,15 +54,15 @@ class Championships:
         Returns:
             ChampionshipListResponse containing list of championships with pagination
         """
-        return self._request_callable(
+        return self.client.do_request(
             endpoint="/championships/list/",
             params=ChampionshipListParameters(
                 page=page,
                 country=country,
-                language=language or self._client.default_language,
+                language=language or self.client.default_language,
                 format=format_,
             ),
-            headers=self._default_header_provider(),
+            headers=self._header_provider(),
             response_model=ChampionshipListResponse,
         )
 
@@ -92,12 +83,12 @@ class Championships:
         Returns:
             ChampionshipViewResponse containing detailed championship data
         """
-        return self._request_callable(
+        return self.client.do_request(
             endpoint="/championships/view/",
             params=ChampionshipViewParameters(
                 id=championship_id,
-                language=language or self._client.default_language,
+                language=language or self.client.default_language,
             ),
-            headers=self._default_header_provider(),
+            headers=self._header_provider(),
             response_model=ChampionshipViewResponse,
         )

@@ -1,0 +1,51 @@
+"""Soccer Football Info API Python SDK.
+
+A comprehensive Python SDK for accessing the Soccer Football Info API via RapidAPI.
+Provides typed clients, request builders, and response models for soccer data.
+
+Quick Start:
+    >>> import soccer_info
+    >>> client = soccer_info.quick_client()
+    >>> championships = client.championships.get_list()
+
+Advanced Usage:
+    >>> from soccer_info.settings import SettingsBuilder
+    >>> from soccer_info.client import Client
+    >>> 
+    >>> client = Client(
+    ...     SettingsBuilder().with_api_key(environment="RAPIDAPI_KEY").build()
+    ... )
+    >>> championships = client.championships.get_list()
+
+Modules:
+    client: API client implementation with httpx
+    settings: Configuration management with flexible authentication
+    requests_: Request building components (headers, parameters, enums)
+    responses: Pydantic models for parsing and validating API responses
+"""
+from . import client
+from . import requests_
+from . import responses
+from . import settings
+
+from typing import Optional
+
+
+def quick_client(
+        settings_instance: Optional[settings.Settings] = None,
+) -> client.Client:
+    """Create a Soccer Football Info API client with sensible defaults.
+    
+    Convenience function that eliminates the need to manually construct 
+    SettingsBuilder objects for basic usage scenarios.
+    
+    Args:
+        settings_instance: Custom settings instance. If None, creates default 
+            settings with API key from RAPIDAPI_KEY environment variable.
+    
+    Returns:
+        Client: Configured client ready for API calls.
+    """
+    return client.Client(
+        settings.SettingsBuilder().with_api_key().build() if settings_instance is None else settings_instance,
+    )

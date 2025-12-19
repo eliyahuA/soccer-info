@@ -1,5 +1,5 @@
 """Client module for Soccer Football Info API."""
-from .client import Client
-from .base_client import BaseClient
+from .httpclient import SyncHTTPClient, AsyncHTTPClient
+from .base_client import SyncClient, AsyncClient
 
-__all__ = ['Client', 'BaseClient']
+__all__ = ['SyncHTTPClient', 'AsyncHTTPClient', 'SyncClient', 'AsyncClient']

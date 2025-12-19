@@ -12,6 +12,12 @@ T = TypeVar('T', bound=ResponseComponent)
 
 @dataclass
 class BaseClient(ABC):
+    settings: Settings
+    default_language: Optional[str] = None
+
+
+@dataclass
+class SyncClient(BaseClient, ABC):
     """Base client for Soccer Football Info API.
     
     Provides common functionality and initialization for specialized clients.
@@ -21,8 +27,6 @@ class BaseClient(ABC):
         settings: API configuration including authentication credentials
         default_language: Preferred language for API responses (optional)
     """
-    settings: Settings
-    default_language: Optional[str] = None
 
     @abstractmethod
     def do_request(
@@ -43,4 +47,18 @@ class BaseClient(ABC):
         Returns:
             Validated response object of the specified model type
         """
+        ...
+
+
+@dataclass
+class AsyncClient(BaseClient, ABC):
+
+    @abstractmethod
+    async def do_request(
+            self,
+            endpoint: str,
+            params: BaseParameters,
+            headers: Header,
+            response_model: Type[T],
+    ) -> T:
         ...

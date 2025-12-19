@@ -5,7 +5,9 @@ from soccer_info import quick_client
 load_dotenv()
 
 with quick_client() as client:
-    r = client.championships.get_list()
+    for i in range(100):
+        r = client.championships.get_list()
+        print(f"request {i}")
     print(json.dumps(r.model_dump(), indent=2))
     
     # Display rate limit information

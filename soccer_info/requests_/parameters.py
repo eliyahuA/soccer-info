@@ -50,5 +50,5 @@ class ChampionshipViewParameters(BaseParameters):
         id: Championship ID (required)
         language: Language code for response (default: en_US)
     """
-    id: int = Field(alias="i")
+    id: str = Field(alias="i")
     language: Optional[str] = Field(default=None, alias="l")

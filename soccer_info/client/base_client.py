@@ -1,9 +1,6 @@
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Type, TypeVar
+from typing import Optional, TypeVar
 
-from soccer_info.requests_.parameters import BaseParameters
-from soccer_info.requests_.headers import Header
 from soccer_info.responses.base import ResponseComponent
 from soccer_info.settings import Settings
 
@@ -11,54 +8,7 @@ T = TypeVar('T', bound=ResponseComponent)
 
 
 @dataclass
-class BaseClient(ABC):
+class BaseClient:
+    """Base client containing common settings for all client types."""
     settings: Settings
     default_language: Optional[str] = None
-
-
-@dataclass
-class SyncClient(BaseClient, ABC):
-    """Base client for Soccer Football Info API.
-    
-    Provides common functionality and initialization for specialized clients.
-    Contains shared settings and default language preferences.
-    
-    Attributes:
-        settings: API configuration including authentication credentials
-        default_language: Preferred language for API responses (optional)
-    """
-
-    @abstractmethod
-    def do_request(
-        self,
-        endpoint: str,
-        params: BaseParameters,
-        headers: Header,
-        response_model: Type[T],
-    ) -> T:
-        """Execute HTTP request to API endpoint.
-        
-        Args:
-            endpoint: API endpoint path (e.g., "/championships/list/")
-            params: Request parameters to include in the API call
-            headers: HTTP headers including RapidAPI authentication
-            response_model: Pydantic model class for response validation
-            
-        Returns:
-            Validated response object of the specified model type
-        """
-        ...
-
-
-@dataclass
-class AsyncClient(BaseClient, ABC):
-
-    @abstractmethod
-    async def do_request(
-            self,
-            endpoint: str,
-            params: BaseParameters,
-            headers: Header,
-            response_model: Type[T],
-    ) -> T:
-        ...

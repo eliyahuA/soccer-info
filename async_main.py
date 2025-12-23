@@ -12,7 +12,7 @@ async def f():
 
         tasks = [
             asyncio.create_task(client.championships.get_by_id(champ.id))
-            for champ in championships.result[0:1]
+            for champ in championships.result[0:6]
         ]
 
         for coro in asyncio.as_completed(tasks):

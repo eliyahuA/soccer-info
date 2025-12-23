@@ -1,4 +1,6 @@
+import asyncio
 import httpx
+import time
 from typing import Optional, Type
 
 from soccer_info.requests_.headers import Header
@@ -47,6 +49,10 @@ class AsyncHTTPClient(AsyncClient):
         self.timeout = timeout
         self._async_http_client: Optional[httpx.AsyncClient] = None
         
+        # Initialize throttling mechanism
+        self._throttle_lock = asyncio.Lock()
+        self._last_request_time: Optional[float] = None
+        
         # Initialize domain clients
         self.championships = AsyncChampionships(self)
 
@@ -86,6 +92,11 @@ class AsyncHTTPClient(AsyncClient):
     ) -> T:
         """Execute async_ HTTP request to Soccer Football Info API endpoint.
         
+        Implements request throttling to ensure minimum time between requests
+        as specified in settings.request_throttle_seconds. If requests come in
+        faster than the throttle limit, they will be queued and processed
+        sequentially with the appropriate delay.
+        
         Args:
             endpoint: API endpoint path (e.g., "/championships/list/")
             params: Request parameters to include in the API call
@@ -99,6 +110,21 @@ class AsyncHTTPClient(AsyncClient):
             httpx.HTTPStatusError: If the request fails with non-2xx status
             RuntimeError: If the response indicates an API error
         """
+        # Acquire lock to ensure proper spacing between request sends
+        async with self._throttle_lock:
+            # Calculate time to wait based on throttle setting
+            if self._last_request_time is not None:
+                elapsed = time.time() - self._last_request_time
+                wait_time = self.settings.request_throttle_seconds - elapsed
+                
+                if wait_time > 0:
+                    # Wait to respect the throttle limit
+                    await asyncio.sleep(wait_time)
+            
+            # Update last request time before sending
+            self._last_request_time = time.time()
+        
+        # Execute the HTTP request outside the lock so responses can overlap
         response = await self.async_http_client.get(
             endpoint,
             params=params.to_dict(),

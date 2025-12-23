@@ -10,4 +10,4 @@ class Settings(BaseModel):
     api_key: str
     api_host: str = "soccer-football-info.p.rapidapi.com"
     base_url: str = "https://soccer-football-info.p.rapidapi.com"
-    request_throttle_seconds: float = 1  # Minimum seconds between API requests
+    request_throttle_seconds: float = 0.3  # Minimum seconds between API requests

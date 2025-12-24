@@ -1,24 +1,27 @@
 import asyncio
+from datetime import datetime
 from dotenv import load_dotenv
 from soccer_info import quick_async_client
 from textwrap import dedent
 load_dotenv()
 
 
-async def f():
+async def main():
 
     async with quick_async_client() as client:
         championships = await client.championships.get_list()
 
         tasks = [
             asyncio.create_task(client.championships.get_by_id(champ.id))
-            for champ in championships.result[0:10]
+            for champ in championships.result[0:20]
         ]
 
         for coro in asyncio.as_completed(tasks):
+
             response = await coro
+            print(datetime.now())
             headers = response.response_headers
-            
+
             print(dedent(f"""
             Result Status - {response.status}
             Rate Limit: {headers.rate_limit_remaining}/{headers.rate_limit_limit} remaining
@@ -27,4 +30,4 @@ async def f():
             """))
 
 if __name__ == "__main__":
-    asyncio.run(f())
+    asyncio.run(main(), debug=True)

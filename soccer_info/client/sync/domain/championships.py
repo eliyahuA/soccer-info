@@ -64,7 +64,7 @@ class Championships:
 
     def get_by_id(
             self,
-            championship_id: int,
+            championship_id: str,
             language: Optional[str] = None,
     ) -> ChampionshipViewResponse:
         """Retrieve detailed championship data including seasons and standings.

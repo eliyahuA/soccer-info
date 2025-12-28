@@ -19,12 +19,11 @@ Process:
 7. Display timing and rate limit information
 """
 import asyncio
-import random
-from collections import defaultdict
+
 from datetime import datetime
 from dotenv import load_dotenv
 from soccer_info import quick_async_client
-from examples.basic import print_status, print_championship_details
+from examples.basic import print_status, print_championship_details, select_championships
 
 load_dotenv()
 
@@ -46,20 +45,7 @@ async def main():
     async with quick_async_client() as client:
         print("Getting championships dataset")
         response = await client.championships.get_list()
-        print_status(response)
-
-        # Randomly select 20 championships from the total available
-        total_championships = response.pagination[0].items
-        random_championships = random.sample(range(total_championships), min(20, total_championships))
-
-        # Group championships by page to minimize API requests
-        # Key: page number, Value: list of indices on that page
-        championships_to_get = defaultdict(list)
-        for championship in random_championships:
-            # Calculate page and index: divmod(24, 25) = (0, 24) → page 1, index 24
-            page, index = divmod(championship, response.pagination[0].per_page)
-            page += 1  # API pages are 1-based, not 0-based
-            championships_to_get[page].append(index)
+        championships_to_get = select_championships(response)
 
         # Fetch all required pages concurrently
         print(f"Fetching {len(championships_to_get)} pages concurrently...")
@@ -78,7 +64,7 @@ async def main():
             print_status(page_response)
 
         # Collect all championship IDs to fetch
-        print(f"Fetching {len(random_championships)} championship details concurrently...")
+        print(f"Fetching championship details concurrently...")
         detail_tasks = []
         for page, indices in championships_to_get.items():
             for idx in indices:

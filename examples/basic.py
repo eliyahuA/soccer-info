@@ -17,11 +17,13 @@ Process:
 """
 import random
 from datetime import datetime
+from typing import Dict, List
+
 from dotenv import load_dotenv
 from soccer_info import quick_client
 from textwrap import dedent
 from collections import defaultdict
-from soccer_info.responses import APIResponse, ChampionshipViewResponse
+from soccer_info.responses import APIResponse, ChampionshipViewResponse, ChampionshipListResponse
 
 load_dotenv()
 
@@ -77,6 +79,40 @@ def print_championship_details(championship_detail: ChampionshipViewResponse):
         print('')
 
 
+def select_championships(initial_list: ChampionshipListResponse) -> Dict[int, List[int]]:
+    """
+    Select random championships and organize them by page number for efficient fetching.
+    
+    Args:
+        initial_list: Initial API response containing pagination metadata
+        
+    Returns:
+        Dictionary mapping page numbers to lists of championship indices on that page.
+        Example: {1: [5, 12, 23], 2: [3, 15], 3: [0, 8]}
+        
+    Process:
+        1. Randomly selects up to 20 championships from the total available
+        2. Calculates which page each championship is on using divmod()
+        3. Groups championships by page number to minimize API requests
+    """
+    print_status(initial_list)
+
+    # Randomly select 20 championships from the total available
+    total_championships = initial_list.pagination[0].items
+    random_championships = random.sample(range(total_championships), min(20, total_championships))
+
+    # Group championships by page to minimize API requests
+    # Key: page number, Value: list of indices on that page
+    championships_to_get = defaultdict(list)
+    for championship in random_championships:
+        # Calculate page and index: divmod(24, 25) = (0, 24) → page 1, index 24
+        page, index = divmod(championship, initial_list.pagination[0].per_page)
+        page += 1  # API pages are 1-based, not 0-based
+        championships_to_get[page].append(index)
+
+    return championships_to_get
+
+
 def main():
     """
     Demonstrate paginated championship fetching with rate limit monitoring.
@@ -95,20 +131,7 @@ def main():
 
         print("Getting championships dataset")
         response = client.championships.get_list()
-        print_status(response)
-
-        # Randomly select 20 championships from the total available
-        total_championships = response.pagination[0].items
-        random_championships = random.sample(range(total_championships), min(20, total_championships))
-
-        # Group championships by page to minimize API requests
-        # Key: page number, Value: list of indices on that page
-        championships_to_get = defaultdict(list)
-        for championship in random_championships:
-            # Calculate page and index: divmod(24, 25) = (0, 24) → page 1, index 24
-            page, index = divmod(championship, response.pagination[0].per_page)
-            page += 1  # API pages are 1-based, not 0-based
-            championships_to_get[page].append(index)
+        championships_to_get = select_championships(response)
 
         # Fetch only the pages we need
         for page, championship_indexes in championships_to_get.items():

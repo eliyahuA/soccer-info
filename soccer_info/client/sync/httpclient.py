@@ -21,7 +21,7 @@ class HTTPClient(Client):
         >>> client = quick_client()
         >>> championships = client.championships.get_list()
         >>> for champ in championships.result:
-        ...     print(f"{champ.name} (ID: {champ.id})")
+        ...     print(f'{champ.name} (ID: {champ.id})' )
     """
 
     def __init__(

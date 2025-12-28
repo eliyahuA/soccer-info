@@ -90,22 +90,12 @@ class AsyncHTTPClient(AsyncClient):
             headers: Header,
             response_model: Type[T],
     ) -> T:
-        """Execute async_ HTTP request to Soccer Football Info API endpoint.
+        """Implements request throttling to ensure minimum time between requests.
         
-        Implements request throttling to ensure minimum time between requests
-        as specified in settings.request_throttle_seconds. If requests come in
-        faster than the throttle limit, they will be queued and processed
-        sequentially with the appropriate delay.
+        Requests are throttled according to settings.request_throttle_seconds. 
+        If requests come in faster than the throttle limit, they will be queued 
+        and processed sequentially with the appropriate delay.
         
-        Args:
-            endpoint: API endpoint path (e.g., "/championships/list/")
-            params: Request parameters to include in the API call
-            headers: HTTP headers including RapidAPI authentication
-            response_model: Pydantic model class for response validation
-            
-        Returns:
-            Validated response object of the specified model type
-            
         Raises:
             httpx.HTTPStatusError: If the request fails with non-2xx status
             RuntimeError: If the response indicates an API error

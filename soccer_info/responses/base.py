@@ -1,6 +1,6 @@
 from pathlib import Path
-from pydantic import BaseModel, ConfigDict, Field, model_validator
-from typing import TypeVar, List, Generic, Any, Optional, Dict
+from pydantic import BaseModel, ConfigDict, Field, model_validator, AliasChoices
+from typing import TypeVar, List, Generic, Optional
 
 
 class ResponseHeaders(BaseModel):
@@ -22,47 +22,42 @@ class ResponseHeaders(BaseModel):
             return {k.lower(): v for k, v in data.items()}
         return data
     
-    # Rate limit headers (try both naming conventions)
-    x_ratelimit_request_limit: Optional[int] = Field(
+    # Rate limit headers (accepts both naming conventions via aliases)
+    rate_limit_limit: Optional[int] = Field(
         default=None,
-        alias="x-ratelimit-request-limit"
-    )
-    x_rate_limit_limit: Optional[int] = Field(
-        default=None,
-        alias="x-rate-limit-limit"
-    )
-    
-    x_ratelimit_request_remaining: Optional[int] = Field(
-        default=None,
-        alias="x-ratelimit-request-remaining"
-    )
-    x_rate_limit_remaining: Optional[int] = Field(
-        default=None,
-        alias="x-rate-limit-remaining"
+        validation_alias=AliasChoices(
+            "x-ratelimit-request-limit",
+            "x-rate-limit-limit"
+        )
     )
     
-    x_ratelimit_request_reset: Optional[int] = Field(
+    rate_limit_remaining: Optional[int] = Field(
         default=None,
-        alias="x-ratelimit-request-reset"
+        validation_alias=AliasChoices(
+            "x-ratelimit-request-remaining",
+            "x-rate-limit-remaining"
+        )
     )
-    x_rate_limit_reset: Optional[int] = Field(
+    
+    rate_limit_reset: Optional[int] = Field(
         default=None,
-        alias="x-rate-limit-reset"
+        validation_alias=AliasChoices(
+            "x-ratelimit-request-reset",
+            "x-rate-limit-reset"
+        )
     )
 
     @property
     def hours_to_reset(self) -> Optional[float]:
         """Calculate hours until rate limit reset.
         
-        Returns the number of hours (with 2 decimal places) until the rate limit resets,
-        based on whichever reset value is available (x_ratelimit_request_reset takes precedence).
+        Returns the number of hours (with 2 decimal places) until the rate limit resets.
         
         Returns:
             Hours until reset as a float, or None if no reset value is available.
         """
-        reset_seconds = self.x_ratelimit_request_reset or self.x_rate_limit_reset
-        if reset_seconds is not None:
-            return round(reset_seconds / 3600, 2)
+        if self.rate_limit_reset is not None:
+            return round(self.rate_limit_reset / 3600, 2)
         return None
 
 

@@ -12,55 +12,59 @@ class Team(ResponseComponent):
 
 class TableEntry(ResponseComponent):
     """Single entry in a league standings table."""
-    team: Team
-    position: int
-    win: int
-    draw: int
-    loss: int
-    points: int
-    goals_scored: int
-    goals_conceded: int
+    team: Team  # Team has required fields internally
+    position: Optional[int] = None
+    win: Optional[int] = None
+    draw: Optional[int] = None
+    loss: Optional[int] = None
+    points: Optional[int] = None
+    goals_scored: Optional[int] = None
+    goals_conceded: Optional[int] = None
     note: Optional[str] = None
 
     @property
-    def matches_played(self) -> int:
+    def matches_played(self) -> Optional[int]:
         """Calculate total matches played."""
-        return self.win + self.draw + self.loss
+        if self.win is not None and self.draw is not None and self.loss is not None:
+            return self.win + self.draw + self.loss
+        return None
 
     @property
-    def goal_difference(self) -> int:
+    def goal_difference(self) -> Optional[int]:
         """Calculate goal difference."""
-        return self.goals_scored - self.goals_conceded
+        if self.goals_scored is not None and self.goals_conceded is not None:
+            return self.goals_scored - self.goals_conceded
+        return None
 
 
 class Group(ResponseComponent):
     """Group/league within a championship season."""
-    name: str
-    table: List[TableEntry]
+    name: Optional[str] = None
+    table: List[TableEntry] = Field(default_factory=list)
 
 
 class Season(ResponseComponent):
     """Championship season with date range and standings."""
-    name: str
-    from_date: str = Field(alias="from")
-    to_date: str = Field(alias="to")
-    groups: List[Group]
+    name: Optional[str] = None
+    from_date: Optional[str] = Field(default=None, alias="from")
+    to_date: Optional[str] = Field(default=None, alias="to")
+    groups: List[Group] = Field(default_factory=list)
 
 
 class ChampionshipListItem(ResponseComponent):
     """Championship item in list response."""
-    id: str
-    name: str
-    has_image: bool
+    id: Optional[str] = None
+    name: Optional[str] = None
+    has_image: Optional[bool] = None
 
 
 class ChampionshipDetail(ResponseComponent):
     """Detailed championship data with seasons."""
-    id: str
-    name: str
-    country: str
-    has_image: bool
-    seasons: List[Season]
+    id: Optional[str] = None
+    name: Optional[str] = None
+    country: Optional[str] = None
+    has_image: Optional[bool] = None
+    seasons: List[Season] = Field(default_factory=list)
 
 
 class ChampionshipListResponse(APIResponse[ChampionshipListItem]):

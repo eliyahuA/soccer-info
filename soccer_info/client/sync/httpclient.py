@@ -6,15 +6,10 @@ from soccer_info.requests_.parameters import BaseParameters
 from soccer_info.responses.base import ResponseHeaders
 from soccer_info.settings import Settings
 from .client import Client, T
-from soccer_info.client.sync.domain.championships import Championships
 
 
-class HTTPClient(Client):
-    """Main client for Soccer Football Info API interactions.
-    
-    Provides high-level access to all API endpoints through specialized
-    domain clients (championships, teams, players, etc.). Handles request 
-    execution with httpx, response parsing, and error handling.
+class HTTPXClient(Client):
+    """httpx-based implementation with lazy initialization and automatic resource cleanup.
     
     Example:
         >>> from soccer_info import quick_client
@@ -25,27 +20,18 @@ class HTTPClient(Client):
     """
 
     def __init__(
-            self,
-            settings: Settings,
-            default_language: Optional[str] = None,
-            timeout: float = 30.0,
+        self,
+        settings: Settings,
+        default_language: Optional[str] = None,
     ):
-        """Initialize the main Soccer API client.
+        """Initialize the httpx-based client.
         
         Args:
             settings: API configuration including authentication credentials
-            default_language: Preferred language for API responses (optional)
-            timeout: Request timeout in seconds (default: 30.0)
+            default_language: Preferred language for API responses
         """
-        # Initialize base client (dataclass)
         super().__init__(settings, default_language)
-        
-        # Initialize HTTP client attributes
-        self.timeout = timeout
         self._http_client: Optional[httpx.Client] = None
-        
-        # Initialize domain clients
-        self.championships = Championships(self)
 
     @property
     def http_client(self) -> httpx.Client:
@@ -56,43 +42,24 @@ class HTTPClient(Client):
         if self._http_client is None:
             self._http_client = httpx.Client(
                 base_url=self.settings.base_url,
-                timeout=self.timeout,
+                timeout=self.settings.request_timeout,
             )
         return self._http_client
 
     def close(self) -> None:
-        """Close the HTTP client and release resources."""
+        """Close the httpx client and release resources."""
         if self._http_client is not None:
             self._http_client.close()
             self._http_client = None
 
-    def __enter__(self) -> 'HTTPClient':
-        """Enter context manager."""
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        """Exit context manager and close client."""
-        self.close()
-
     def do_request(
-            self,
-            endpoint: str,
-            params: BaseParameters,
-            headers: Header,
-            response_model: Type[T],
+        self,
+        endpoint: str,
+        params: BaseParameters,
+        headers: Header,
+        response_model: Type[T],
     ) -> T:
-        """Execute HTTP request to Soccer Football Info API endpoint.
-        
-        Args:
-            endpoint: API endpoint path (e.g., "/championships/list/")
-            params: Request parameters to include in the API call
-            headers: HTTP headers including RapidAPI authentication
-            response_model: Pydantic model class for response validation
-            
-        Returns:
-            Validated response object of the specified model type
-            
-        Raises:
+        """Raises:
             httpx.HTTPStatusError: If the request fails with non-2xx status
             RuntimeError: If the response indicates an API error
         """

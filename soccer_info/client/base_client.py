@@ -9,6 +9,13 @@ T = TypeVar('T', bound=ResponseComponent)
 
 @dataclass
 class BaseClient:
-    """Base client containing common settings for all client types."""
+    """Base client for Soccer Football Info API.
+    
+    Provides common configuration and settings shared by all client implementations.
+    
+    Attributes:
+        settings: API configuration including authentication credentials
+        default_language: Preferred language for API responses
+    """
     settings: Settings
     default_language: Optional[str] = None

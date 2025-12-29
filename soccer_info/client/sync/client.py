@@ -1,23 +1,48 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import Type
+from typing import Type, Optional
 
 from soccer_info.requests_.parameters import BaseParameters
 from soccer_info.requests_.headers import Header
 from soccer_info.client.base_client import BaseClient, T
+from soccer_info.settings import Settings
 
 
-@dataclass
 class Client(BaseClient, ABC):
-    """Base client for Soccer Football Info API.
-    
-    Provides common functionality and initialization for specialized clients.
-    Contains shared settings and default language preferences.
+    """Synchronous client with domain client aggregation and context manager support.
     
     Attributes:
-        settings: API configuration including authentication credentials
-        default_language: Preferred language for API responses (optional)
+        championships: Domain client for championship-related endpoints
     """
+
+    def __init__(
+        self,
+        settings: Settings,
+        default_language: Optional[str] = None,
+    ):
+        """Initialize the base client with common configuration.
+        
+        Args:
+            settings: API configuration including authentication credentials
+            default_language: Preferred language for API responses
+        """
+        super().__init__(settings, default_language)
+        
+        # Import here to avoid circular dependency
+        from soccer_info.client.sync.domain.championships import Championships
+        self.championships = Championships(self)
+
+    def __enter__(self) -> 'Client':
+        """Enter context manager."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Exit context manager and close client."""
+        self.close()
+
+    @abstractmethod
+    def close(self) -> None:
+        """Close the HTTP client and release resources."""
+        ...
 
     @abstractmethod
     def do_request(

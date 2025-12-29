@@ -10,9 +10,9 @@ Quick Start:
 
 Advanced Usage:
     >>> from soccer_info.settings import SettingsBuilder
-    >>> from soccer_info.client import HTTPClient
+    >>> from soccer_info.client import HTTPXClient
     >>> 
-    >>> client = HTTPClient(
+    >>> client = HTTPXClient(
     ...     SettingsBuilder().with_api_key(environment="RAPIDAPI_KEY").build()
     ... )
     >>> championships = client.championships.get_list()
@@ -33,7 +33,7 @@ from typing import Optional
 
 def quick_client(
         settings_instance: Optional[settings.Settings] = None,
-) -> client.HTTPClient:
+) -> client.HTTPXClient:
     """Create a Soccer Football Info API client with sensible defaults.
     
     Convenience function that eliminates the need to manually construct 
@@ -44,16 +44,16 @@ def quick_client(
             settings with API key from RAPIDAPI_KEY environment variable.
     
     Returns:
-        SyncHTTPClient: Configured sync client ready for API calls.
+        HTTPXClient: Configured sync client ready for API calls.
     """
-    return client.HTTPClient(
+    return client.HTTPXClient(
         settings.SettingsBuilder().with_api_key().build() if settings_instance is None else settings_instance,
     )
 
 
 def quick_async_client(
         settings_instance: Optional[settings.Settings] = None,
-) -> client.AsyncHTTPClient:
+) -> client.AsyncHTTPXClient:
     """Create an async_ Soccer Football Info API client with sensible defaults.
     
     Convenience function that eliminates the need to manually construct 
@@ -66,6 +66,6 @@ def quick_async_client(
     Returns:
         AsyncHTTPClient: Configured async_ client ready for API calls.
     """
-    return client.AsyncHTTPClient(
+    return client.AsyncHTTPXClient(
         settings.SettingsBuilder().with_api_key().build() if settings_instance is None else settings_instance,
     )

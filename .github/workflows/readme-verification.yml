@@ -18,23 +18,21 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const comment = `@cursor Please review this PR and verify the README.md is correct and complete.
-
-**Guidelines Reference:**
-https://github.com/eliyahuA/sdk-toolbox/blob/main/.cursor/rules/readme.mdc
-
-Analyze the changes and provide feedback on:
-1. Does the README need updates based on the PR changes? If yes, what sections and why?
-2. If README was updated, are the updates correct and complete?
-3. Do all code examples follow the guidelines?
-4. Is the documentation style compliant?
-
-Provide specific, actionable feedback.`;
-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: comment
+              body: `@cursor Please review this PR and verify the README.md is correct and complete.
+
+            **Guidelines Reference:**
+            https://github.com/eliyahuA/sdk-toolbox/blob/main/.cursor/rules/readme.mdc
+
+            Analyze the changes and provide feedback on:
+            1. Does the README need updates based on the PR changes? If yes, what sections and why?
+            2. If README was updated, are the updates correct and complete?
+            3. Do all code examples follow the guidelines (complete, runnable, proper style)?
+            4. Is the documentation style compliant (no marketing language, imperative mood, etc.)?
+
+            Provide specific, actionable feedback.`
             });
 

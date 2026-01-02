@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from soccer_info.requests_ import ChampionshipListParameters, ChampionshipViewParameters
-from soccer_info.responses import ChampionshipListResponse, ChampionshipViewResponse
+from soccer_info.requests_ import ChampionshipListParameters, ChampionshipViewParameters, ChampionshipBySeasonParameters
+from soccer_info.responses import ChampionshipListResponse, ChampionshipViewResponse, ChampionshipSeasonResponse
 from ..async_client import AsyncClient
 from ...common.domain.championships import Championships as CommonChampionships
 
@@ -43,4 +43,31 @@ class AsyncChampionships(CommonChampionships):
             ),
             headers=self._header_provider(),
             response_model=ChampionshipViewResponse,
+        )
+
+    async def get_by_season(
+        self,
+        championship_id: str,
+        season: str,
+        language: Optional[str] = None,
+    ) -> ChampionshipSeasonResponse:
+        """Get standings for a specific championship season (async).
+        
+        Args:
+            championship_id: ID of the championship
+            season: Season year (e.g., "2023/2024")
+            language: Language code
+            
+        Returns:
+            Standings and details for the requested season
+        """
+        return await self.client.do_request(
+            endpoint="/championships/season/",
+            params=ChampionshipBySeasonParameters(
+                id=championship_id,
+                season=season,
+                language=self._get_language(language),
+            ),
+            headers=self._header_provider(),
+            response_model=ChampionshipSeasonResponse,
         )

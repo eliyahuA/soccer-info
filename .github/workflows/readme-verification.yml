@@ -19,7 +19,8 @@ jobs:
       - name: Fetch Rules from SDK Toolbox
         id: fetch_rules
         run: |          
-          RULES_CONTENT=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" \
+          # Bugbot fix: Added -f to curl to fail on HTTP errors (404, 403, etc.)
+          RULES_CONTENT=$(curl -fsSL -H "Authorization: token ${{ secrets.GH_PAT }}" \
             https://raw.githubusercontent.com/eliyahuA/sdk-toolbox/main/.cursor/rules/readme.mdc)
           
           if [ -z "$RULES_CONTENT" ]; then
@@ -37,8 +38,9 @@ jobs:
           echo "- ✅ Successfully fetched latest guidelines from \`sdk-toolbox\` ($LINE_COUNT lines)." >> $GITHUB_STEP_SUMMARY
 
           # Generate a random unique delimiter to prevent EOF collision
-          # Bugbot fix: prevents rules content from accidentally closing the heredoc
-          DELIMITER=$(dd if=/dev/urandom bs=15 count=1 2>/dev/null | base64 | tr -dc 'a-zA-Z0-9')
+          # Bugbot fix: ensures delimiter is never empty by adding a fixed prefix
+          RAND_PART=$(dd if=/dev/urandom bs=15 count=1 2>/dev/null | base64 | tr -dc 'a-zA-Z0-9')
+          DELIMITER="CURSOR_RULES_$RAND_PART"
 
           # Escape for JSON/Markdown safety
           echo "rules<<$DELIMITER" >> $GITHUB_OUTPUT

@@ -36,17 +36,23 @@ jobs:
           echo "### 🚀 README Verification Triggered" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Successfully fetched latest guidelines from \`sdk-toolbox\` ($LINE_COUNT lines)." >> $GITHUB_STEP_SUMMARY
 
+          # Generate a random unique delimiter to prevent EOF collision
+          # Bugbot fix: prevents rules content from accidentally closing the heredoc
+          DELIMITER=$(dd if=/dev/urandom bs=15 count=1 2>/dev/null | base64 | tr -dc 'a-zA-Z0-9')
+
           # Escape for JSON/Markdown safety
-          echo "rules<<EOF" >> $GITHUB_OUTPUT
+          echo "rules<<$DELIMITER" >> $GITHUB_OUTPUT
           echo "$RULES_CONTENT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "$DELIMITER" >> $GITHUB_OUTPUT
 
       - name: Post Trigger Comment as Human
         uses: actions/github-script@v7
+        env:
+          RULES_CONTENT: ${{ steps.fetch_rules.outputs.rules }}
         with:
           github-token: ${{ secrets.GH_PAT }}
           script: |
-            const rules = `${{ steps.fetch_rules.outputs.rules }}`;
+            const rules = process.env.RULES_CONTENT;
             const prompt = `@cursor I need you to verify this PR's impact on README.md.
 
             ### Instructions:

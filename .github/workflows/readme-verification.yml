@@ -38,14 +38,14 @@ jobs:
           echo "- ✅ Successfully fetched latest guidelines from \`sdk-toolbox\` ($LINE_COUNT lines)." >> $GITHUB_STEP_SUMMARY
 
           # Generate a random unique delimiter to prevent EOF collision
-          # Bugbot fix: ensures delimiter is never empty by adding a fixed prefix
+          # Bugbot fix: ensures delimiter is never empty and uniquely identifiable
           RAND_PART=$(dd if=/dev/urandom bs=15 count=1 2>/dev/null | base64 | tr -dc 'a-zA-Z0-9')
-          DELIMITER="CURSOR_RULES_$RAND_PART"
+          EOF="EOF_$RAND_PART"
 
           # Escape for JSON/Markdown safety
-          echo "rules<<$DELIMITER" >> $GITHUB_OUTPUT
+          echo "rules<<$EOF" >> $GITHUB_OUTPUT
           echo "$RULES_CONTENT" >> $GITHUB_OUTPUT
-          echo "$DELIMITER" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
 
       - name: Post Trigger Comment as Human
         uses: actions/github-script@v7

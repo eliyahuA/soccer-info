@@ -22,13 +22,13 @@ jobs:
           # Bugbot fix: Added -f to curl to fail on HTTP errors (404, 403, etc.)
           # We capture the exit code to handle the error and still write to the summary
           ERROR_CODE=0
-          RULES_CONTENT=$(curl -fsSL -H "Authorization: token ${{ secrets.GH_PAT }}" \
+          RULES_CONTENT=$(curl -fsSL -H "Authorization: token ${{ secrets.SDK_TOOLBOX_TOKEN }}" \
             https://raw.githubusercontent.com/eliyahuA/sdk-toolbox/main/.cursor/rules/readme.mdc) || ERROR_CODE=$?
           
           if [ "$ERROR_CODE" -ne 0 ] || [ -z "$RULES_CONTENT" ]; then
             echo "### ❌ README Verification Failed" >> $GITHUB_STEP_SUMMARY
             echo "Error: Could not fetch rules content from sdk-toolbox (Curl Exit Code: $ERROR_CODE)." >> $GITHUB_STEP_SUMMARY
-            echo "::error title=Fetch Failed::Could not retrieve README rules from the sdk-toolbox repository. Check your GH_PAT secret."
+            echo "::error title=Fetch Failed::Could not retrieve README rules from the sdk-toolbox repository. Check your SDK_TOOLBOX_TOKEN secret."
             exit 1
           fi
 

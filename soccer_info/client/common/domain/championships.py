@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from soccer_info.requests_ import Header
-from soccer_info.responses import ChampionshipListResponse, ChampionshipViewResponse
+from soccer_info.responses import ChampionshipListResponse, ChampionshipViewResponse, ChampionshipSeasonResponse
 from soccer_info.client.base_client import BaseClient
 
 
@@ -69,5 +69,24 @@ class Championships(ABC):
 
         Returns:
             ChampionshipViewResponse containing detailed championship data
+        """
+        pass
+
+    @abstractmethod
+    def get_by_season(
+        self,
+        championship_id: str,
+        season: str,
+        language: Optional[str] = None,
+    ) -> ChampionshipSeasonResponse:
+        """Get standings for a specific championship season.
+
+        Args:
+            championship_id: The unique identifier of the championship
+            season: The season year (e.g., "2023/2024")
+            language: Language code for response (default: en_US)
+
+        Returns:
+            ChampionshipSeasonResponse containing season standings
         """
         pass

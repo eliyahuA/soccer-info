@@ -39,7 +39,7 @@ jobs:
             ### deliverables:
             - If documentation is missing: Provide the exact Markdown snippet that should be added.
             - If documentation is incorrect: Explain the discrepancy and provide the corrected version.
-            - If everything is perfect: Confirm that no changes are needed.`;
+            - If everything is perfect: Confirm that no changes are needed.
             
             When you are writing the comment keep in mind it will be posted to github therefor format it with care accordingly.
             `;

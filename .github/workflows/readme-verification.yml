@@ -19,7 +19,7 @@ jobs:
       - name: Post Trigger Comment as Human
         uses: actions/github-script@v7
         env:
-          RULES_URL: ${{ secrets.README_RULES_URL }}
+          RULES_URL: ${{ vars.README_RULES_URL }}
         with:
           github-token: ${{ secrets.GH_PAT }}
           script: |

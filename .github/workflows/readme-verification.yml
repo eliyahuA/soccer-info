@@ -11,64 +11,39 @@ jobs:
     # Safety Check: Only trigger for repository owners or collaborators
     # This prevents strangers from exhausting Cursor AI quota via public PRs.
     if: |
-      github.event.pull_request.author_association == 'OWNER' || 
-      github.event.pull_request.author_association == 'COLLABORATOR'
+      !github.event.pull_request.draft &&
+      (github.event.pull_request.author_association == 'OWNER' || 
+       github.event.pull_request.author_association == 'COLLABORATOR')
     runs-on: ubuntu-latest
     steps:
-
-      - name: Fetch Rules from SDK Toolbox
-        id: fetch_rules
-        run: |          
-          # Bugbot fix: Added -f to curl to fail on HTTP errors (404, 403, etc.)
-          RULES_CONTENT=$(curl -fsSL -H "Authorization: token ${{ secrets.GH_PAT }}" \
-            https://raw.githubusercontent.com/eliyahuA/sdk-toolbox/main/.cursor/rules/readme.mdc)
-          
-          if [ -z "$RULES_CONTENT" ]; then
-            echo "### ❌ README Verification Failed" >> $GITHUB_STEP_SUMMARY
-            echo "Error: Could not fetch rules content from sdk-toolbox." >> $GITHUB_STEP_SUMMARY
-            echo "::error title=Fetch Failed::Could not retrieve README rules from the sdk-toolbox repository."
-            exit 1
-          fi
-
-          # Count the lines in the fetched guidelines
-          LINE_COUNT=$(echo "$RULES_CONTENT" | wc -l)
-
-          # Start the summary
-          echo "### 🚀 README Verification Triggered" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Successfully fetched latest guidelines from \`sdk-toolbox\` ($LINE_COUNT lines)." >> $GITHUB_STEP_SUMMARY
-
-          # Generate a random unique delimiter to prevent EOF collision
-          # Bugbot fix: ensures delimiter is never empty and uniquely identifiable
-          RAND_PART=$(dd if=/dev/urandom bs=15 count=1 2>/dev/null | base64 | tr -dc 'a-zA-Z0-9')
-          EOF="EOF_$RAND_PART"
-
-          # Escape for JSON/Markdown safety
-          echo "rules<<$EOF" >> $GITHUB_OUTPUT
-          echo "$RULES_CONTENT" >> $GITHUB_OUTPUT
-          echo "$EOF" >> $GITHUB_OUTPUT
 
       - name: Post Trigger Comment as Human
         uses: actions/github-script@v7
         env:
-          RULES_CONTENT: ${{ steps.fetch_rules.outputs.rules }}
+          RULES_URL: ${{ vars.README_RULES_URL }}
         with:
           github-token: ${{ secrets.GH_PAT }}
           script: |
-            const rules = process.env.RULES_CONTENT;
             const prompt = `@cursor I need you to verify this PR's impact on README.md.
 
+            # Instructions:
+            You are a Technical Writer specialised for writing Documentation for public python packages.
+            Verify the code changes in this PR against our internal README guidelines located here:
+            ${process.env.RULES_URL}
+
             ### Instructions:
-            Verify the code changes in this PR against our internal README guidelines provided below. 
-            Determine if:
-            1. The README needs updates to reflect new features/changes.
-            2. Any existing README updates in this PR follow the rules.
+            1. Analyze the code changes in this PR.
+            2. Specifically check for any new Features, Classes, Methods, or Configuration changes that require documentation.
+            3. Verify if the current README.md (and any changes to it) accurately reflects these code changes.
+            4. Compare the documentation against our internal guidelines: ${process.env.RULES_URL}
 
-            ### Our Guidelines:
-            \`\`\`markdown
-            ${rules}
-            \`\`\`
-
-            Please provide a detailed report on any missing or incorrect documentation.`;
+            ### deliverables:
+            - If documentation is missing: Provide the exact Markdown snippet that should be added.
+            - If documentation is incorrect: Explain the discrepancy and provide the corrected version.
+            - If everything is perfect: Confirm that no changes are needed.
+            
+            When you are writing the comment keep in mind it will be posted to github therefor format it with care accordingly.
+            `;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -79,8 +54,10 @@ jobs:
 
       - name: Finalize Summary
         run: |
+          echo "### 🚀 README Verification Triggered" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Posted @cursor trigger comment to PR #${{ github.event.pull_request.number }}." >> $GITHUB_STEP_SUMMARY
           echo "- 👤 **Identity:** Comment posted using your Personal Access Token." >> $GITHUB_STEP_SUMMARY
+          echo "- 🔗 **Source:** Referencing rules from \`sdk-toolbox\` repo via link." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "> [!TIP]" >> $GITHUB_STEP_SUMMARY
           echo "> Cursor is now analyzing your PR. You should see a response in the PR comments shortly." >> $GITHUB_STEP_SUMMARY

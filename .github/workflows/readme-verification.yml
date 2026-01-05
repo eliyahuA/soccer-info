@@ -11,8 +11,9 @@ jobs:
     # Safety Check: Only trigger for repository owners or collaborators
     # This prevents strangers from exhausting Cursor AI quota via public PRs.
     if: |
-      github.event.pull_request.author_association == 'OWNER' || 
-      github.event.pull_request.author_association == 'COLLABORATOR'
+      !github.event.pull_request.draft &&
+      (github.event.pull_request.author_association == 'OWNER' || 
+       github.event.pull_request.author_association == 'COLLABORATOR')
     runs-on: ubuntu-latest
     steps:
 

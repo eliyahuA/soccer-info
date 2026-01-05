@@ -52,16 +52,3 @@ class ChampionshipViewParameters(BaseParameters):
     """
     id: str = Field(alias="i")
     language: Optional[str] = Field(default=None, alias="l")
-
-
-class ChampionshipBySeasonParameters(BaseParameters):
-    """Parameters for championship by season endpoint.
-    
-    Attributes:
-        id: Championship ID (required)
-        season: Season year (required)
-        language: Language code for response (default: en_US)
-    """
-    id: str = Field(alias="i")
-    season: str = Field(alias="s")
-    language: Optional[str] = Field(default=None, alias="l")

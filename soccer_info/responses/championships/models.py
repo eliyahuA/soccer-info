@@ -75,8 +75,3 @@ class ChampionshipListResponse(APIResponse[ChampionshipListItem]):
 class ChampionshipViewResponse(APIResponse[ChampionshipDetail]):
     """Response for championship view endpoint."""
     pass
-
-
-class ChampionshipSeasonResponse(APIResponse[Season]):
-    """Response for championship by season endpoint."""
-    pass

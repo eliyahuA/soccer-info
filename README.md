@@ -295,19 +295,6 @@ We welcome contributions! Here's how you can help:
    pip install -r requirements-dev.txt
    ```
 
-### Running Tests
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=soccer_info
-
-# Run async tests specifically
-pytest -k async
-```
-
 ### Development Environment
 
 The project includes:

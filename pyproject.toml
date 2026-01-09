@@ -60,7 +60,8 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-# Flat layout - soccer_info is in project root
+where = ["."]
+include = ["soccer_info*"]
 
 [tool.setuptools.package-data]
 "*" = ["py.typed"]

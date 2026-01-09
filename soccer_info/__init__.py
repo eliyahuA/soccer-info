@@ -30,6 +30,8 @@ from . import settings
 
 from typing import Optional
 
+__version__ = "0.1.0"
+
 
 def quick_client(
         settings_instance: Optional[settings.Settings] = None,

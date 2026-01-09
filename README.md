@@ -1,7 +1,9 @@
 # Soccer Info - Python SDK for Soccer Football Info API
 
-![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+[![PyPI version](https://img.shields.io/pypi/v/soccer-info.svg)](https://pypi.org/project/soccer-info/)
+[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Downloads](https://img.shields.io/pypi/dm/soccer-info.svg)](https://pypi.org/project/soccer-info/)
 
 A Python SDK for accessing the Soccer Football Info API via RapidAPI. Provides both synchronous and asynchronous clients with typed request builders and Pydantic response models for soccer championship data.
 

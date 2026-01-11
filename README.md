@@ -232,8 +232,8 @@ championships_german = client.championships.get_list(language="de_DE")
 
 ### Client Creation Functions
 
-* `quick_client(settings_instance=None)` - Create synchronous client with default settings
-* `quick_async_client(settings_instance=None)` - Create asynchronous client with default settings
+* `quick_client()` - Create synchronous client with default settings
+* `quick_async_client()` - Create asynchronous client with default settings
 
 ### Championship Methods
 

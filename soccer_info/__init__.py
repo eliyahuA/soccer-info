@@ -34,7 +34,7 @@ __version__ = "0.1.0"
 
 
 def quick_client(
-        settings_instance: Optional[settings.Settings] = None,
+        setting: Optional[settings.Settings] = None,
 ) -> client.HTTPXClient:
     """Create a Soccer Football Info API client with sensible defaults.
     
@@ -42,19 +42,19 @@ def quick_client(
     SettingsBuilder objects for basic usage scenarios.
     
     Args:
-        settings_instance: Custom settings instance. If None, creates default 
+        setting: Custom settings instance. If None, creates default
             settings with API key from RAPIDAPI_KEY environment variable.
     
     Returns:
         HTTPXClient: Configured sync client ready for API calls.
     """
     return client.HTTPXClient(
-        settings.SettingsBuilder().with_api_key().build() if settings_instance is None else settings_instance,
+        settings.SettingsBuilder().with_api_key().build() if setting is None else setting,
     )
 
 
 def quick_async_client(
-        settings_instance: Optional[settings.Settings] = None,
+        setting: Optional[settings.Settings] = None,
 ) -> client.AsyncHTTPXClient:
     """Create an async_ Soccer Football Info API client with sensible defaults.
     
@@ -62,12 +62,12 @@ def quick_async_client(
     SettingsBuilder objects for basic async_ usage scenarios.
     
     Args:
-        settings_instance: Custom settings instance. If None, creates default 
+        setting: Custom settings instance. If None, creates default 
             settings with API key from RAPIDAPI_KEY environment variable.
     
     Returns:
         AsyncHTTPClient: Configured async_ client ready for API calls.
     """
     return client.AsyncHTTPXClient(
-        settings.SettingsBuilder().with_api_key().build() if settings_instance is None else settings_instance,
+        settings.SettingsBuilder().with_api_key().build() if setting is None else setting,
     )

@@ -232,8 +232,8 @@ championships_german = client.championships.get_list(language="de_DE")
 
 ### Client Creation Functions
 
-* `quick_client(settings_instance=None)` - Create synchronous client with default settings
-* `quick_async_client(settings_instance=None)` - Create asynchronous client with default settings
+* `quick_client()` - Create synchronous client with default settings
+* `quick_async_client()` - Create asynchronous client with default settings
 
 ### Championship Methods
 
@@ -294,19 +294,6 @@ We welcome contributions! Here's how you can help:
    pip install -e .
    pip install -r requirements-dev.txt
    ```
-
-### Running Tests
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=soccer_info
-
-# Run async tests specifically
-pytest -k async
-```
 
 ### Development Environment
 

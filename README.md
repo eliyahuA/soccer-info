@@ -9,12 +9,13 @@ A Python SDK for accessing the Soccer Football Info API via RapidAPI. Provides b
 
 ## Scope and Limitations
 
-This SDK currently implements the **Championship API endpoints** from the Soccer Football Info API:
+This SDK currently implements **Championships, Countries, and Matches** endpoints from the Soccer Football Info API:
 
-* **Championships List** - Browse and filter available soccer championships by country
-* **Championship Details** - Get detailed championship data including seasons, groups, and team standings
+* **Championships** - Browse and filter championships by country, get detailed championship data including seasons, groups, and team standings
+* **Countries** - List all countries with soccer data including statistics on championships, teams, players, managers, referees, and stadiums
+* **Matches** - Query match data with basic/full details, betting odds from multiple bookmakers, progressive timeline snapshots, and filter by date, championship, manager, or stadium
 
-The Soccer Football Info API offers 29 total endpoints covering matches, live scores, teams, players, managers, referees, stadiums, and more. This SDK currently focuses on championship data. For the complete API catalog, visit the [Soccer Football Info API documentation on RapidAPI](https://rapidapi.com/soccerfootball-info-soccerfootball-info-default/api/soccer-football-info).
+The Soccer Football Info API offers 29 total endpoints covering live scores, teams, players, managers, referees, stadiums, and more. This SDK currently focuses on championship, country, and match data. For the complete API catalog, visit the [Soccer Football Info API documentation on RapidAPI](https://rapidapi.com/soccerfootball-info-soccerfootball-info-default/api/soccer-football-info).
 
 Future versions may expand to include additional endpoints based on community needs.
 
@@ -240,7 +241,29 @@ championships_german = client.championships.get_list(language="de_DE")
 * `get_list(page=None, country=None, language=None)` - Retrieve paginated list of championships with optional country filter
 * `get_by_id(championship_id, language=None)` - Get detailed championship data including seasons, groups, and standings
 
+### Countries Methods
+
+* `get_list(format_=None)` - Retrieve list of all countries with soccer data and statistics
+
+### Matches Methods
+
+**Single Match Endpoints:**
+* `get_view_basic(match_id, language=None)` - Get single match with basic data (no odds)
+* `get_view_full(match_id, language=None)` - Get single match with full data including odds
+* `get_odds(match_id)` - Get match odds from multiple bookmakers
+* `get_progressive(match_id, language=None, format=None)` - Get match with progressive timeline data
+
+**Day-Based Endpoints:**
+* `get_by_day_basic(date, page=None, language=None, format=None)` - Get matches for specific date with basic data
+* `get_by_day_full(date, page=None, language=None, format=None)` - Get matches for specific date with full data including odds
+
+**Filter-Based Endpoints:**
+* `get_by_filter_basic(championship_id=None, manager_id=None, stadium_id=None, page=None, language=None)` - Filter matches by championship, manager, or stadium (basic data)
+* `get_by_filter_full(championship_id=None, manager_id=None, stadium_id=None, page=None, language=None)` - Filter matches by championship, manager, or stadium (full data with odds)
+
 ### Response Models
+
+#### Championships Response Models
 
 * `ChampionshipListResponse` - Paginated list of championship items
 * `ChampionshipViewResponse` - Detailed championship with seasons and standings
@@ -250,6 +273,50 @@ championships_german = client.championships.get_list(language="de_DE")
 * `Group` - League group with standings table
 * `TableEntry` - Team standing with position, points, wins, draws, losses, goals
 * `Team` - Team reference (id, name)
+
+#### Countries Response Models
+
+* `CountryListResponse` - List of countries with soccer data
+* `CountryItem` - Country information with code, name, timezones, and statistics (championships, managers, players, referees, stadiums, teams)
+
+#### Matches Response Models
+
+**Match Types:**
+* `MatchBasic` - Match with basic data (no odds)
+* `MatchFull` - Match with full data including odds
+* `ProgressiveMatch` - Match with progressive timeline data
+
+**Match Components:**
+* `MatchChampionship` - Championship reference in match data
+* `MatchTeam` - Team data with score, stats, lineup, and manager
+* `MatchScore` - Score breakdown by period (final, first half, second half, overtime, penalties)
+* `MatchStats` - Team statistics (possession, attacks, shots, corners, fouls)
+* `MatchEvent` - Match events (goals, cards, substitutions)
+* `MatchReferee` - Referee reference
+* `MatchStadium` - Stadium reference
+
+**Odds Components:**
+* `MatchOdds` - Complete match odds (kickoff and live)
+* `MatchOddsSet` - Set of odds for a match moment
+* `Odds1X2` - Win/draw/win odds
+* `OddsHandicap` - Asian handicap odds
+* `OddsOverUnder` - Over/under odds
+* `BookmakerOdds1X2` - 1X2 odds from multiple bookmakers
+* `BookmakerOddsHandicap` - Handicap odds from multiple bookmakers
+* `BookmakerOddsOverUnder` - Over/under odds from multiple bookmakers
+
+**Progressive Data:**
+* `ProgressiveDataPoint` - Single data point in progressive match timeline
+
+**Response Types:**
+* `MatchViewBasicResponse` - Response for single match basic view
+* `MatchViewFullResponse` - Response for single match full view
+* `MatchOddsResponse` - Response for match odds
+* `MatchProgressiveResponse` - Response for progressive match data
+* `MatchDayBasicResponse` - Response for day-based basic query
+* `MatchDayFullResponse` - Response for day-based full query
+* `MatchByBasicResponse` - Response for filter-based basic query
+* `MatchByFullResponse` - Response for filter-based full query
 
 ### Response Properties
 

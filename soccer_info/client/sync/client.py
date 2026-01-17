@@ -12,6 +12,8 @@ class Client(BaseClient, ABC):
     
     Attributes:
         championships: Domain client for championship-related endpoints
+        matches: Domain client for match-related endpoints
+        countries: Domain client for country-related endpoints
     """
 
     def __init__(
@@ -29,7 +31,11 @@ class Client(BaseClient, ABC):
         
         # Import here to avoid circular dependency
         from soccer_info.client.sync.domain.championships import Championships
+        from soccer_info.client.sync.domain.matches import Matches
+        from soccer_info.client.sync.domain.countries import Countries
         self.championships = Championships(self)
+        self.matches = Matches(self)
+        self.countries = Countries(self)
 
     def __enter__(self) -> 'Client':
         """Enter context manager."""

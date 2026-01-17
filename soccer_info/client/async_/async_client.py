@@ -14,6 +14,8 @@ class AsyncClient(BaseClient, ABC):
     
     Attributes:
         championships: Domain client for championship-related endpoints
+        matches: Domain client for match-related endpoints
+        countries: Domain client for country-related endpoints
     """
 
     def __init__(
@@ -35,7 +37,11 @@ class AsyncClient(BaseClient, ABC):
         
         # Import here to avoid circular dependency
         from soccer_info.client.async_.domain.championships import AsyncChampionships
+        from soccer_info.client.async_.domain.matches import AsyncMatches
+        from soccer_info.client.async_.domain.countries import AsyncCountries
         self.championships = AsyncChampionships(self)
+        self.matches = AsyncMatches(self)
+        self.countries = AsyncCountries(self)
 
     async def __aenter__(self) -> 'AsyncClient':
         """Enter async context manager."""

@@ -1,6 +1,8 @@
+ipython
 # Development dependencies
 -r requirements.txt
 
 python-dotenv>=1.0.0
-
-
+# For Examples and Data Exploration
+jupyterlab
+pandas

@@ -1,16 +1,5 @@
-"""Response models for Soccer Football Info API."""
-from .base import ResponseComponent, APIResponse, Pagination, ResponseHeaders
-from .championships import (
-    ChampionshipListItem,
-    ChampionshipListResponse,
-    ChampionshipDetail,
-    ChampionshipViewResponse,
-    Season,
-    Group,
-    TableEntry,
-    Team,
-)
-from .matches import (
+"""Response models for matches endpoints."""
+from .models import (
     # Basic components
     MatchChampionship,
     MatchScore,
@@ -49,27 +38,9 @@ from .matches import (
     MatchByBasicResponse,
     MatchByFullResponse,
 )
-from .countries import (
-    CountryItem,
-    CountryListResponse,
-)
 
 __all__ = [
-    # Base
-    'ResponseComponent',
-    'APIResponse',
-    'Pagination',
-    'ResponseHeaders',
-    # Championships
-    'ChampionshipListItem',
-    'ChampionshipListResponse',
-    'ChampionshipDetail',
-    'ChampionshipViewResponse',
-    'Season',
-    'Group',
-    'TableEntry',
-    'Team',
-    # Matches - Basic components
+    # Basic components
     'MatchChampionship',
     'MatchScore',
     'MatchAttacks',
@@ -82,7 +53,7 @@ __all__ = [
     'MatchEvent',
     'MatchReferee',
     'MatchStadium',
-    # Matches - Odds components
+    # Odds components
     'Odds1X2',
     'OddsHandicap',
     'OddsOverUnder',
@@ -91,13 +62,13 @@ __all__ = [
     'BookmakerOddsOverUnder',
     'MatchOddsSet',
     'MatchOdds',
-    # Matches - Progressive data
+    # Progressive data
     'ProgressiveDataPoint',
     'ProgressiveMatch',
-    # Matches - Match types
+    # Match types
     'MatchBasic',
     'MatchFull',
-    # Matches - Response types
+    # Response types
     'MatchViewBasicResponse',
     'MatchViewFullResponse',
     'MatchOddsResponse',
@@ -106,7 +77,4 @@ __all__ = [
     'MatchDayFullResponse',
     'MatchByBasicResponse',
     'MatchByFullResponse',
-    # Countries
-    'CountryItem',
-    'CountryListResponse',
 ]

@@ -1,5 +1,5 @@
 from typing import List, Optional, Any
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from ..base import ResponseComponent, APIResponse
 
@@ -252,6 +252,17 @@ class MatchFull(ResponseComponent):
     referee: Optional[MatchReferee] = None
     stadium: Optional[MatchStadium] = None
     odds: Optional[MatchOdds] = None
+    
+    @field_validator('odds', mode='before')
+    @classmethod
+    def convert_empty_list_to_none(cls, value):
+        """Convert empty list to None for odds field.
+        
+        The API sometimes returns [] instead of None when odds data is not available.
+        """
+        if isinstance(value, list) and not value:
+            return None
+        return value
 
 
 # =============================================================================
